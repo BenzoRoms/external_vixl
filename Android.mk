@@ -54,6 +54,17 @@
 
 LOCAL_PATH:= $(call my-dir)
 
+# Having trouble building
+# with DTC so use gcc for
+# arm targets only.
+ifeq ($(TARGET_ARCH),arm)
+  vixl_use_clang := false
+  vixl_default_clang := false
+else
+  vixl_use_clang := true
+  vixl_default_clang :=
+endif
+
 vixl_include_files := $(LOCAL_PATH)/src/ \
 
 vixl_src_files := \
@@ -114,7 +125,7 @@ ifeq ($(ART_COVERAGE), true)
 endif
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_default_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -128,7 +139,7 @@ LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_default_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -143,7 +154,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_use_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -158,7 +169,7 @@ LOCAL_MULTILIB := both
 include $(BUILD_HOST_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_use_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -179,7 +190,7 @@ include $(BUILD_HOST_SHARED_LIBRARY)
 # To run all the tests: vixl-test-runner --run_all
 #
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_use_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
